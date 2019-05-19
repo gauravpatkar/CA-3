@@ -62,11 +62,14 @@ names(rainfall_and_environment_df)[3]<-paste("Rainfall_Readings")
 
 # Groupimg the dataframe by Total emmission and 
 # rainfall reading for a logical comparison between two
+rainfall_and_environment_df$Condition <- ifelse(rainfall_and_environment_df$Total_Emission >25000, "Up", "DOWN")
 
-rainfall_and_environment_df <- data.frame(
-  Pollution = rep(c("Total_Emission", "Rainfall_Readings"), each = 16),
-  Reading = c(rainfall_and_environment_df$Total_Emission, rainfall_and_environment_df$Rainfall_Readings),
-  Year = c(rainfall_and_environment_df$Year))
+
+str(rainfall_and_environment_df)
+
+str(rainfall_and_environment_df)
+
+
 
 install.packages("ggpubr")
 library(ggpubr)
@@ -74,23 +77,27 @@ library(ggpubr)
 str(rainfall_and_environment_df)
 
 
-ggboxplot(rainfall_and_environment_df, x = "Pollution", y = "Reading", color = "Pollution", palette = c("#00AFBB", "#E7B800"),
+ggboxplot(rainfall_and_environment_df, x = "Condition", y = "Rainfall_Readings",
+          palette = c("#00AFBB", "#E7B800"),
        ylab = "Reading", xlab = "Pollution")
 
 
 
-# Shapiro-Wilk normality test for Men's weights
-with(final_data, shapiro.test(Reading[Pollution == "Total Emission By $ Gases"]))# p = 0.1
-# Shapiro-Wilk normality test for Women's weights
-with(final_data, shapiro.test(Reading[Pollution == "Bellumet Observatory Rainfall Readings"])) # p = 0.6
+# Checking Normality
+
+shapiro.test(rainfall_and_environment_df$Rainfall_Readings)
+
+shapiro.test(rainfall_and_environment_df$Total_Emission)
 
 
+colnames(rainfall_and_environment_df)
 
-res.ftest <- var.test(Reading ~ Pollution, data = final_data)
+res.ftest <- var.test(Rainfall_Readings ~ Condition, data = rainfall_and_environment_df)
+
 res.ftest
 
 # Compute t-test
-res <- t.test(Final$Total_Emission_By_Gases, Final$Bellumet_Observatory_Rainfall_Readings, var.equal = TRUE)
+res <- t.test(rainfall_and_environment_df$Condition, rainfall_and_environment_df$Rainfall_Readings, var.equal = TRUE)
 res
 
 # Compute t-test
