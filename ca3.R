@@ -2,6 +2,7 @@
 # Importing Environment Pollution dataset
 
 environment_problem_df <- read.csv("D:/data science/New folder/gases.csv", header = TRUE)
+str(environment_problem_df)
 
 # Using dplyr Package
 
@@ -21,14 +22,16 @@ str(environment_problem_df)
 environment_problem_df <- environment_problem_df %>%
   select(Gases, year, Total.emissions)
 
-# Grouping by the year and caluculating total emmision by all the four gases 
+# Grouping by the year and calculating total emmision by all the four gases 
 
 environment_problem_df <- data.frame(Groupn= rep(c(environment_problem_df$year)),
                  Total.emision = c(environment_problem_df$Total.emissions))
+str(environment_problem_df)
 
 # Importing rainfall dataset
 
 rainfall_df <- read.csv("rainfall_new.csv")
+str(rainfall_df)
 
 # Extracting specific columns as per the need 
 # In our case it is yearand the reading recorded by  The Belmullet observatory
@@ -47,6 +50,8 @@ rainfall_df$year <- sub("^(\\d{4}).*$", "\\1", rainfall_df$year)
 
 rainfall_df <- rainfall_df %>% group_by(year) %>% summarize(Belmullet = mean(Belmullet))
 
+str(rainfall_df)
+
 # merging two data sets
 
 rainfall_and_environment_df <- merge(environment_problem_df, rainfall_df, by.x = "Groupn", by.y = "year")
@@ -62,7 +67,7 @@ names(rainfall_and_environment_df)[3]<-paste("Rainfall_Readings")
 
 # Groupimg the dataframe by Total emmission and 
 # rainfall reading for a logical comparison between two
-rainfall_and_environment_df$Condition <- ifelse(rainfall_and_environment_df$Total_Emission >25000, "Up", "DOWN")
+rainfall_and_environment_df$Condition <- ifelse(rainfall_and_environment_df$Total_Emission >25000, "high", "low")
 
 
 str(rainfall_and_environment_df)
@@ -70,13 +75,13 @@ str(rainfall_and_environment_df)
 str(rainfall_and_environment_df)
 
 
-
+#installing ggpubr library 
 install.packages("ggpubr")
 library(ggpubr)
 
 str(rainfall_and_environment_df)
 
-
+#ploting a boxplot to see comparsion
 ggboxplot(rainfall_and_environment_df, x = "Condition", y = "Rainfall_Readings",
           palette = c("#00AFBB", "#E7B800"),
        ylab = "Reading", xlab = "Pollution")
@@ -89,26 +94,24 @@ shapiro.test(rainfall_and_environment_df$Rainfall_Readings)
 
 shapiro.test(rainfall_and_environment_df$Total_Emission)
 
+#applying wilcox test
+wilcox.test(rainfall_and_environment_df$Total_Emission)
+wilcox.test(rainfall_and_environment_df$Rainfall_Readings)
 
-colnames(rainfall_and_environment_df)
 
-res.ftest <- var.test(Rainfall_Readings ~ Condition, data = rainfall_and_environment_df)
+# applying two sample t-test
+rainfall.and.environment.t.test <- t.test(Rainfall_Readings ~ Condition, data = rainfall_and_environment_df )
 
-res.ftest
+rainfall.and.environment.t.test
 
-# Compute t-test
-res <- t.test(rainfall_and_environment_df$Condition, rainfall_and_environment_df$Rainfall_Readings, var.equal = TRUE)
-res
+rainfall.and.environment.t.test$p.value
 
-# Compute t-test
-res <- t.test(Reading ~ Pollution, data = final_data, var.equal = TRUE)
-res
+# group means
+rainfall.and.environment.t.test$estimate 
 
-# printing the p-value
-res$p.value
+# confidence level
+rainfall.and.environment.t.test$conf.int
+attr(rainfall.and.environment.t.test$conf.int, "conf.level")
 
-# printing the mean
-res$estimate
 
-# printing the confidence interval
-res$conf.int
+
