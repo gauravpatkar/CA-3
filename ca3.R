@@ -28,6 +28,9 @@ environment_problem_df <- data.frame(Groupn= rep(c(environment_problem_df$year))
                  Total.emision = c(environment_problem_df$Total.emissions))
 str(environment_problem_df)
 
+
+###############################################################################################
+
 # Importing rainfall dataset
 
 rainfall_df <- read.csv("rainfall_new.csv")
@@ -52,6 +55,8 @@ rainfall_df <- rainfall_df %>% group_by(year) %>% summarize(Belmullet = mean(Bel
 
 str(rainfall_df)
 
+#################################################################################################
+
 # merging two data sets
 
 rainfall_and_environment_df <- merge(environment_problem_df, rainfall_df, by.x = "Groupn", by.y = "year")
@@ -70,10 +75,47 @@ names(rainfall_and_environment_df)[3]<-paste("Rainfall_Readings")
 rainfall_and_environment_df$Condition <- ifelse(rainfall_and_environment_df$Total_Emission >25000, "high", "low")
 
 
+
+#########################################################################################
+#plotting histogram
+library(lattice)
+histogram(~Rainfall_Readings | Condition, data = rainfall_and_environment_df)
 str(rainfall_and_environment_df)
 
 str(rainfall_and_environment_df)
 
+
+##########################################################################################
+#plotting qq plot2 
+install.packages("ggplot2")
+library(ggplot2)
+
+#using qqplot
+
+with(rainfall_and_environment_df,
+     qqplot(Rainfall_Readings[Condition == "high"],
+            Rainfall_Readings[Condition == "low"], 
+            main = "Comparing 2 samples", 
+            xlab = "Higher Total Emission = Yes",
+            ylab =  "Higher Total Emission = NO"))
+
+# Using a QQ plot to check for normality
+
+with(rainfall_and_environment_df, {
+  qqnorm(Rainfall_Readings[Condition == "low"], 
+         main = "Low")
+})
+
+# to  add normailty line and evalute 
+
+with(rainfall_and_environment_df, {
+  qqnorm(Rainfall_Readings[Condition == "low"], 
+         main = "Low")
+  qqline(Rainfall_Readings[Condition == "low"])
+})
+
+
+#############################################################################################
 
 #installing ggpubr library 
 install.packages("ggpubr")
@@ -87,6 +129,7 @@ ggboxplot(rainfall_and_environment_df, x = "Condition", y = "Rainfall_Readings",
        ylab = "Reading", xlab = "Pollution")
 
 
+#############################################################################################
 
 # Checking Normality
 
